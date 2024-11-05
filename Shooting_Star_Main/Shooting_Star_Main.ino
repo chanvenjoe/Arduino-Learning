@@ -25,11 +25,10 @@ struct Button{
 };
 
 Button button1 = {D4, 0, false};
-Button button2 = {9, 0, false};
+Button button2 = {D6, 0, false};
 
 #define NUM_LEDS  30    // Enter the total number of LEDs on the strip
-#define LEDPIN    D3      // The pin connected to Din to control the LEDs
-#define BTNPIN    7
+#define LEDPIN    5      // The pin connected to Din to control the LEDs
 
 
 CRGB leds[NUM_LEDS];
@@ -57,6 +56,11 @@ void setup() {
   pinMode(button2.PIN, INPUT_PULLDOWN);
   attachInterrupt(button2.PIN, isr, RISING);
 
+  pinMode(D5, OUTPUT);
+  digitalWrite(D5, HIGH);
+
+
+ 
   FastLED.addLeds<WS2812B, LEDPIN, GRB>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
   FastLED.setMaxPowerInVoltsAndMilliamps(5, 1500);    // Set power limit of LED strip to 5V, 1500mA
   FastLED.clear();                                    // Initialize all LEDs to "OFF"
@@ -74,40 +78,58 @@ void loop() {
     Serial.printf("Button 2 has been pressed %u times\n", button2.numberKeyPresses);
     button2.pressed = false;
     attachInterrupt(button2.PIN, isr, RISING);
+    button1.numberKeyPresses = 0;
   }
+  if(button1.numberKeyPresses!=0)
+  {
+        fill_solid(leds,30, CRGB::Black);
+        FastLED.show();
+  }
+  else
+  {
     switch(button2.numberKeyPresses)
     {
       case 0:
-       // shootingStarAnimation(255, 255, 255, random(10, 60), random(5, 100), random(2000, 8000), 1); //Right
-       shootingStarAnimation(255, 255, 255, 30, 15, 1000, 1);
+        fill_solid(leds,30, CRGB::White);
+        FastLED.show();
         break;
-      case 1:
-        shootingStarAnimation(255, 255, 255, 30,15, 1000, -1);//Left
-     //   Fire(0, 50, 100, 10, 0);
+      case 7:
+        shootingStarAnimation(random(0,255), 255, 255, random(10, 60), random(5, 100), random(2000, 8000), 1); //Right
+    //   shootingStarAnimation(255, 255, 255, 30, 15, 1000, 1);
+        break;
+      case 8:
+      //  shootingStarAnimation(255, 255, 255, 30,15, 1000, -1);//Left
+        Fire(0, 50, 100, 10, 0);
         break;
       case 2://
-        fadeAnimation(255, 255,255);//Bat low
-   //     fadeAnimation(random(0,255), random(0,255),random(0,255));
+    //    fadeAnimation(255, 255,255);//Bat low
+        fadeAnimation(random(0,255), random(0,255),random(0,255));
         break;
       case 3: //Over heating
         Fire(30, 150, 50);//candle
         break;
       case 4:
-        knightRider(255, 255, 255, 10, 10, 50);//backward
-       // knightRider(0, 255, 0, 5, 10, 50);
-       // knightRider(0, 0, 255, 5, 10, 50);
+      //  knightRider(255, 255, 255, 10, 10, 50);//backward
+        knightRider(0, 255, 0, 5, 10, 50);
+        knightRider(0, 0, 255, 5, 10, 50);
+        knightRider(255, random(0,255), random(0,255), 5, 10, 50);
         break;
       case 5:
-         shootingStarAnimation(255, 255, 255, 30, random(5, 100), random(2000, 8000), 1); //Charging
-   //     rainbowCycle(50);
+       //  shootingStarAnimation(255, 255, 255, 10, random(5, 100), random(2000, 8000), 1); //Charging
+        rainbowCycle(50);
         break;
       case 6:
-      TwinklePixels(255, 255, 10, 50, 50);//Brake
-     //   TwinklePixels(random(256), 255, 20, 50, 50);
+     // TwinklePixels(255, 255, 10, 20, 50);//Brake
+        TwinklePixels(random(256), 255, 20, 50, 50);
+        break;
+      case 1:
+        fill_solid(leds,30, CRGB::Black);
+        FastLED.show();
         break;
       default:
         break;
     }
+  }
  //   Serial.println(buttonState);
     Serial.printf("bt1:%d\n",button1.numberKeyPresses);
     Serial.printf("bt2:%d\n",button2.numberKeyPresses);
